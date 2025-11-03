@@ -110,23 +110,41 @@ async function run() {
     });
     // Food Producat All API Closed
 
+
+
     // Coustomer APi Start
     app.post("/price", async (req, res) => {
       const data = req.body;
       const result = await bidPriceCollection.insertOne(data);
       res.send(result);
+      console.log(result);
     });
-
-    app.get("/price", async (req, res) => {
-      const query = {};
-      if (req.query.email) {
-        query.byer_email = req.email;
+   
+    app.get("/price", async (req,res) => {
+      const query = {}
+      if(req.query.email){
+        query.byer_email = req.query.email;
       }
+      const data = bidPriceCollection.find(query);
+      const result = await data.toArray();
+      res.send(result)
+    })
 
-      const result = await bidPriceCollection.findOne(query);
+    app.get("/price/:id", async (req,res) => {
+      const producatID = req.params.id;
+      const qoery = {producatIDS: producatID};
+      const totaldata =  bidPriceCollection.find(qoery);
+      const result = await totaldata.toArray();
       res.send(result);
-      console.log(query, result);
-    });
+    })
+
+    app.delete("/price/:id", async (req,res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await bidPriceCollection.deleteOne(query);
+      res.send(result)
+      console.log(id)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log(
